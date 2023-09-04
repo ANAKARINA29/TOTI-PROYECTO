@@ -16,7 +16,8 @@ function App() {
       </div>
       <div className="main">
         <Main />
-        <DailyOrganizer /> 
+        <DailyOrganizer/> 
+
       </div>
       <div className="footer">
         <Footer />

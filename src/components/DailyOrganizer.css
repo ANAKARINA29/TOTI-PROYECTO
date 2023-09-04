@@ -85,3 +85,31 @@
     transform: translateY(-50%);
   }
   
+  .task-list input[type="text"] {
+    font-size: 2em;
+    border: none;
+    outline: none;
+    width: 100%;
+  }
+
+/* Contenedor principal */
+.container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+  overflow: hidden; /* Añadido para contener elementos flotantes */
+}
+
+/* Columnas de tareas */
+.task-columns {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Título editable de cada columna */
+.task-list h2 {
+  font-size: 20px;
+
+}

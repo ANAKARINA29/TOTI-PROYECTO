@@ -12,16 +12,25 @@ class DailyOrganizer extends Component {
       taskType: 'dailyTasks',
       tasks: [],
       idCounter: 0,
+      dailyTasksTitle: 'Tareas del día',
+      fixedRoutinesTitle: 'Rutinas fijas',
     };
   }
 
   componentDidMount() {
-    // Cargamos las tareas desde la API local cuando el componente se monta.
     this.loadTasks();
+    const dailyTasksTitle = localStorage.getItem('dailyTasksTitle') || 'Tareas del día';
+    const fixedRoutinesTitle = localStorage.getItem('fixedRoutinesTitle') || 'Rutinas fijas';
+    this.setState({ dailyTasksTitle, fixedRoutinesTitle });
   }
 
+  handleTitleChange = (e, titleType) => {
+    this.setState({ [titleType]: e.target.value }, () => {
+      localStorage.setItem(titleType, this.state[titleType]);
+    });
+  };
+
   loadTasks = () => {
-    // Realizar una solicitud GET a la API para obtener las tareas.
     fetch('http://localhost:3000/tasks')
       .then((response) => response.json())
       .then((data) => {
@@ -35,7 +44,6 @@ class DailyOrganizer extends Component {
   addTask = () => {
     const { newTask, taskType, idCounter } = this.state;
     if (newTask.trim() !== '') {
-      // Crear una nueva tarea en la API.
       fetch('http://localhost:3000/tasks', {
         method: 'POST',
         headers: {
@@ -48,20 +56,20 @@ class DailyOrganizer extends Component {
           isEditable: false,
         }),
       })
-        .then((response) => response.json())
-        .then((data) => {
-          // Actualizar el estado con la nueva tarea y restablecer el campo de entrada.
-          this.setState((prevState) => ({
-            tasks: [...prevState.tasks, data],
-            idCounter: idCounter + 1,
-            newTask: '',
-          }));
-        })
-        .catch((error) => {
-          console.error('Error al agregar la tarea:', error);
-        });
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState((prevState) => ({
+          tasks: [...prevState.tasks, data],
+          idCounter: idCounter + 1,
+          newTask: '',
+        }));
+      })
+      .catch((error) => {
+        console.error('Error al agregar la tarea:', error);
+      });
     }
   };
+
 
   moveTask = (id, newType) => {
     const updatedTasks = this.state.tasks.map(task =>
@@ -101,10 +109,10 @@ class DailyOrganizer extends Component {
     );
     this.setState({ tasks: updatedTasks });
   };
-  
 
   render() {
-    const { newTask, taskType, tasks } = this.state;
+    const { newTask, taskType, tasks, dailyTasksTitle, fixedRoutinesTitle }= this.state;
+
 
     return (
       <div className="container">
@@ -116,14 +124,18 @@ class DailyOrganizer extends Component {
             onChange={(e) => this.setState({ newTask: e.target.value })}
           />
           <select onChange={(e) => this.setState({ taskType: e.target.value })} value={taskType}>
-            <option value="dailyTasks">Tarefas do dia</option>
-            <option value="fixedRoutines">Rutinas Fijas</option>
+            <option value="dailyTasks"> 1</option>
+            <option value="fixedRoutines">2</option>
           </select>
           <button onClick={this.addTask}>Adicionar</button>
         </div>
         <div className="task-columns">
           <div className="task-list">
-            <h2>Tareas del Día</h2>
+            <input
+              type="text"
+              value={dailyTasksTitle}
+              onChange={(e) => this.handleTitleChange(e, 'dailyTasksTitle')}
+            />
             {tasks.filter((task) => task.type === 'dailyTasks').map((task) => (
               <div key={task.id} className={`task-item ${task.isCompleted ? 'completed' : ''}`}>
                 {task.isEditable ? (
@@ -140,14 +152,16 @@ class DailyOrganizer extends Component {
                   <FontAwesomeIcon icon={faEdit} onClick={() => this.editTask(task.id)} />
                   <FontAwesomeIcon icon={faArrowRight} onClick={() => this.moveTask(task.id, 'fixedRoutines')} />
                   <FontAwesomeIcon icon={faTrash} onClick={() => this.deleteTask(task.id)} />
-            
-
                 </div>
               </div>
             ))}
           </div>
-          <div className="task-list">
-            <h2>Rutinas Fijas</h2>
+           <div className="task-list">
+            <input
+              type="text"
+              value={fixedRoutinesTitle}
+              onChange={(e) => this.handleTitleChange(e, 'fixedRoutinesTitle')}
+            />
             {tasks.filter((task) => task.type === 'fixedRoutines').map((task) => (
               <div key={task.id} className={`task-item ${task.isCompleted ? 'completed' : ''}`}>
                 {task.isEditable ? (
@@ -157,7 +171,6 @@ class DailyOrganizer extends Component {
                     onChange={(e) => this.updateTaskText(e, task.id)}
                     onKeyPress={(e) => this.handleKeyPress(e, task.id)}
                   />
-                  
                 ) : (
                   <span onClick={() => this.toggleCompletion(task.id)}>{task.text}</span>
                 )}
@@ -175,4 +188,4 @@ class DailyOrganizer extends Component {
   }
 }
 
-export default DailyOrganizer;
+export default DailyOrganizer;
