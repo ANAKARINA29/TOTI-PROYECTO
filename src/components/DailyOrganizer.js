@@ -78,23 +78,55 @@ class DailyOrganizer extends Component {
     this.setState({ tasks: updatedTasks });
   };
 
-  editTask = (id) => {
-    const updatedTasks = this.state.tasks.map(task =>
-      task.id === id ? { ...task, isEditable: !task.isEditable } : task
-    );
-    this.setState({ tasks: updatedTasks });
-  };
+ // En tu componente DailyOrganizer
 
-  handleKeyPress = (e, id) => {
-    if (e.key === 'Enter') {
-      this.editTask(id);
+// ...
+
+editTask = (id) => {
+  const updatedTasks = this.state.tasks.map(task =>
+    task.id === id ? { ...task, isEditable: !task.isEditable } : task
+  );
+  this.setState({ tasks: updatedTasks });
+  fetch(`http://localhost:3000/tasks/${id}`, {
+    method: 'PATCH', 
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ isEditable: !this.state.tasks.find(task => task.id === id).isEditable }), // Cambiar el estado de isEditable
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('No se pudo actualizar la tarea');
     }
-  };
+  })
+  .catch(error => {
+    console.error('Error al actualizar la tarea:', error);
+  });
+};
+
+handleKeyPress = (e, id) => {
+  if (e.key === 'Enter') {
+    this.editTask(id);
+  }
+};
+
+
+    deleteTask = (id) => {
+  const apiUrl = `http://localhost:3000/tasks/${id}`; 
+  fetch(apiUrl, {
+        method: 'DELETE',
+      })
+  .then(response => {
+          if (response.ok) {
+            const updatedTasks = this.state.tasks.filter(task => task.id !== id);
+            this.setState({ tasks: updatedTasks });
+          }
+        })
+      .catch(error => {
+          console.error('Error al eliminar la tarea:', error);
+        });
+    };
   
-  deleteTask = (id) => {
-    const updatedTasks = this.state.tasks.filter(task => task.id !== id);
-    this.setState({ tasks: updatedTasks });
-  };
   
   toggleCompletion = (id) => {
     const updatedTasks = this.state.tasks.map(task =>
