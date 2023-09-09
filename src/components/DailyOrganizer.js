@@ -78,10 +78,6 @@ class DailyOrganizer extends Component {
     this.setState({ tasks: updatedTasks });
   };
 
- // En tu componente DailyOrganizer
-
-// ...
-
 editTask = (id) => {
   const updatedTasks = this.state.tasks.map(task =>
     task.id === id ? { ...task, isEditable: !task.isEditable } : task
