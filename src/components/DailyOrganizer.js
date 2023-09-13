@@ -88,7 +88,7 @@ editTask = (id) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ isEditable: !this.state.tasks.find(task => task.id === id).isEditable }), // Cambiar el estado de isEditable
+    body: JSON.stringify({ isEditable: !this.state.tasks.find(task => task.id === id).isEditable }), 
   })
   .then(response => {
     if (!response.ok) {
